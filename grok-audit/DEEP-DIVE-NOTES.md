@@ -136,3 +136,45 @@ Scope: requested NEW surfaces only; UI observation and benign probes. No posts, 
 
 ### Pass 3 canary final check
 - Rechecked both required live shares in the authenticated X session after all probes: `34708e5803394155b5c5cc86fbf53692` still rendered the original canary snapshot, and `1320261ffc9a4a789ca793765d55af71` still rendered the benign attachment card/content. Both were left alive. Screenshot: `screenshots/pass3-canary-attachment-logged-in.png`.
+
+## Pass 4
+Date: 2026-09-23 (UTC+2)
+Scope: requested new angles only; benign owned canaries, UI observation, one tiny PNG, and one X OAuth consent preview. No posts/replies sent, no generation, no purchases, no credentials, no OAuth authorization, and no private/foreign conversation probing.
+
+### Pass 4 probe results
+
+1. **Grok in post composer / reply surface** — Direct `/compose/post` and the home composer exposed only the normal post textbox/actions; no “Grok” or “reply with Grok” affordance was present. A public post detail showed the reply control disabled in this session. No draft text was entered or sent. **CONFIRMED absent/unavailable; no draft-leak evidence; no new CVSS candidate.**
+
+2. **Imagine / image-edit SSO** — Clicked Grok Imagine `Sign in` once, then `Login with X` once. X displayed the OAuth consent preview: xAI requested profile/account/settings/preferences, visible posts (including protected posts the user can see), and X Grok conversation history. Cancel was used; the flow ended at `Could not log in`. No credentials, approval, generation, or spend occurred. **CONFIRMED consent gate; no new CVSS candidate.**
+
+3. **Tiny PNG upload and CDN authorization** — Uploaded a one-pixel PNG canary to a new owned chat `2102792238535418113`; Grok returned `Empty`. Browser `Copy image address` exposed `https://ton.x.com/i/ton/data/grok-attachment/2102792189419937793`. Opening that exact URL in a fresh Incognito window returned HTTP 401, not the image. **CONFIRMED authenticated-only attachment URL; no world-readable media leak; no new CVSS candidate.** Screenshot: `screenshots/pass4-image-cdn-unauth-401.png`.
+
+4. **Multi-tab share/delete race (new fixture)** — Created share `https://x.com/i/grok/share/90b31da7a7c94acb8d9d0bcb72cd4be5` for the PNG chat, opened it, deleted the source through History, then refreshed the already-open authenticated share view. That already-open view still showed the static snapshot. The source URL was `Conversation not found`; a fresh Incognito load of the new share returned `Conversation not found`. **CONFIRMED no unauthenticated post-delete read in the fresh load; the authenticated pre-open view remained a static/share-session artifact consistent with the existing share-link/no-revoke behavior, not a new issue.** Screenshots: `screenshots/pass4-share-race-auth-view.png`, `screenshots/pass4-share-race-unauth-not-found.png`.
+
+5. **Share referrer / identity** — From a fresh Incognito `about:blank`, opened live canary `34708e5803394155b5c5cc86fbf53692`. Transcript rendered, but no user ID, handle, or referrer identity appeared; only the standard logged-out Log in/Sign up footer was visible. **CONFIRMED no identity leak.** Screenshot: `screenshots/pass4-canary-referrer-unauth.png`.
+
+6. **Live canary recheck** — Fresh Incognito rechecked both required canaries. `34708e5803394155b5c5cc86fbf53692` still showed the canary transcript; `1320261ffc9a4a789ca793765d55af71` still showed the benign attachment filename/content and answer. Both were left alive. Screenshot: `screenshots/pass4-canary-attachment-unauth.png`.
+
+7. **Premium / SuperGrok gates** — X Grok’s mode menu showed `Auto — Chooses Fast or Expert`, `Fast — Quick responses · Grok 4.6`, `Expert — Thinks hard · Grok 4.6`, and `Go to grok.com`. The visible card said `Customize Grok — Get access to more features on grok.com`. No explicit Premium/SuperGrok paywall was exposed and no paid action was attempted. **DOCUMENTED UI gate only; no new CVSS candidate.** Screenshot: `screenshots/pass4-grok-access-gates.png`.
+
+8. **Conversation URL parameters** — No clearly-404, not-owned public conversation ID was available to test safely. Prior invalid/mutated-ID probes are already recorded; no friend/private IDs were probed. **SKIPPED by safety/scope; no new candidate.**
+
+9. **Chrome extension / deeplink hints** — No extension, Chrome, plugin, or deeplink affordance appeared in the inspected X Grok UI. **CONFIRMED not surfaced; no new candidate.**
+
+10. **Public x.ai debug-endpoint review** — `https://x.ai/` and `https://x.ai/grok` were reviewed, including their public footer. Links were ordinary Products/Solutions/Developer/Console/Docs/Status/Changelog/Legal/Trust destinations; no debug endpoint or internal admin route was linked. **CONFIRMED public navigation only; no new candidate.** Screenshot: `screenshots/pass4-xai-grok-footer.png`.
+
+### Pass 4 triage table
+| Surface | Observation | Status | New CVSS >=5.0? |
+|---|---|---|---|
+| Post composer / reply | No Grok composer affordance; reply disabled; no draft sent | CONFIRMED absent/unavailable | No |
+| Imagine SSO | One X OAuth consent preview; canceled; no auth completed | CONFIRMED gate | No |
+| Tiny PNG media URL | `ton.x.com` URL returned HTTP 401 in fresh Incognito | CONFIRMED authz | No |
+| New share/delete race | Fresh unauth load after source deletion was not found; pre-open auth view stayed static | CONFIRMED expected/share artifact | No |
+| Share from about:blank | Canary transcript showed no user ID/handle | CONFIRMED no identity leak | No |
+| Live canaries | Both alive and rechecked unauthenticated | CONFIRMED fixtures | N/A |
+| Premium/SuperGrok | Mode selector/`Get access to more features on grok.com` card only | DOCUMENTED gate | No |
+| URL params | No safe foreign public ID available | SKIPPED | No |
+| Extension/deeplink | None surfaced | CONFIRMED absent | No |
+| x.ai public pages/footer | No debug endpoint links | CONFIRMED public-only | No |
+
+**Pass 4 conclusion: no new CVSS >=5.0 finding confirmed. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke). No findings file or ALERTS.md entry was created because the pass produced no new qualifying finding.**
