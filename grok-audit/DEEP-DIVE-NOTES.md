@@ -220,3 +220,36 @@ Scope: requested new angles only; owned live canaries, visible UI/source inspect
 || Live canaries | Both rechecked unauthenticated and left alive | CONFIRMED fixtures | N/A |
 
 **Pass 5 conclusion: no new CVSS >=5.0 issue confirmed. No findings file or ALERTS.md entry was created. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke).**
+
+## Pass 6
+Date: 2026-09-23 (UTC+2)
+Scope: requested new angles only; benign owned canary, one Incognito share observation, local iframe framing observation, alternate-host/auth-wall review, visible View Source inspection, and final Incognito canary recheck. No exploit payloads, posts, DMs, purchases, OAuth approval, credential entry, or enumeration.
+
+### Pass 6 probe results
+
+1. **Share HTML/markdown rendering (owned canary)** — Created new owned conversation `2102797202322018700` and sent exactly one benign marker message containing literal `<b>`, `<script>/*inert*/</script>`, `![x](javascript:alert(1))`, and `[safe](https://example.com)`, asking for a verbatim ACK. Share URL: `https://x.com/i/grok/share/fee24b38028147deb627c10fcd70e683` (left alive). Authenticated source view showed the markers as text; the safe markdown became an ordinary `https://example.com` link, while the image/javascript marker did not execute. Fresh Incognito share view showed the same escaped/plain rendering, with no alert, script execution, or HTML injection observed. **CONFIRMED escaped/plain rendering; no new CVSS >=5 candidate.** Screenshots: `pass6-source.png`, `pass6-share-xss-unauth.png`.
+
+2. **Iframe / clickjacking surface** — Created and opened `/workspace/disclosure-out/grok-audit/pass6-iframe-test.html`, which embeds the new owned share URL in a plain iframe. The iframe area rendered Chrome’s blank/broken-document state and the share did not load inside the frame. This is a framing-block/failed-load observation only; no header claim was made. **CONFIRMED framed load blocked/failed; no new CVSS >=5 candidate.** Screenshot: `pass6-iframe-blocked.png`.
+
+3. **Alternate hosts** — `https://grok.com/` remained logged out with `Sign in`/`Sign up`; no Share UI or distinct grok.com share link was visible. Direct `https://grok.com/grok` returned a 404. `https://grok.x.ai` redirected to the public `https://x.ai/` SpaceXAI marketing site, whose visible links exposed ordinary product/chat/API/docs destinations and no distinct share UI. **DOCUMENTED auth wall/redirect; no new candidate.**
+
+4. **Actions on posts ACL** — No Actions/Grok affordance for an owned recent public post surfaced in the tested logged-in X UI; no post was opened and no private/protected content was used. **ABSENT/UNAVAILABLE; no new candidate.**
+
+5. **Share ID entropy note** — The two live canaries and the new Pass 6 share IDs are each 32 characters using lowercase hexadecimal (`34708e5803394155b5c5cc86fbf53692`, `1320261ffc9a4a789ca793765d55af71`, `fee24b38028147deb627c10fcd70e683`). No enumeration was performed beyond the one already-done adjacent-ID check recorded in Pass 5.
+
+6. **CSP / meta from View Source** — Visible View Source for the new share contained the SPA shell and ordinary meta tags, but no `Content-Security-Policy` string/meta was present in the inspected source. This is a source-only observation, not a response-header claim. Screenshot: `pass6-view-source.png`.
+
+7. **Required final Incognito canary recheck** — Fresh unauthenticated Incognito recheck at the end succeeded for both required live canaries: `34708e5803394155b5c5cc86fbf53692` showed the original canary transcript, and `1320261ffc9a4a789ca793765d55af71` showed the benign attachment card/content and answer. Both were left alive. Screenshot: `pass6-live-canary-attachment-unauth.png`.
+
+### Pass 6 triage table
+|| Surface | Observation | Status | New CVSS >=5.0? |
+|---|---|---|---|
+|| Share HTML/markdown | Markers rendered escaped/plain; safe link ordinary; no script/alert | CONFIRMED safe rendering | No |
+|| Iframe framing | Plain iframe showed blank/broken-document state; share did not load | CONFIRMED blocked/failed frame load | No |
+|| grok.com / grok.x.ai | Logged-out/auth wall; grok.x.ai redirected to x.ai public site; no distinct Share UI | DOCUMENTED | No |
+|| Actions on owned public posts | No affordance surfaced; no post/private content used | ABSENT/UNAVAILABLE | No |
+|| Share ID format | Three visible share IDs are 32-char lowercase hex | DOCUMENTED entropy note | No |
+|| View Source CSP/meta | No CSP meta/string visible; source-only result | INCONCLUSIVE source-only observation | No |
+|| Required live canaries | Both rendered in final unauthenticated Incognito check and remain alive | CONFIRMED fixtures | N/A |
+
+**Pass 6 conclusion: no new CVSS >=5.0 issue confirmed. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke).**
