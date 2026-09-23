@@ -178,3 +178,45 @@ Scope: requested new angles only; benign owned canaries, UI observation, one tin
 | x.ai public pages/footer | No debug endpoint links | CONFIRMED public-only | No |
 
 **Pass 4 conclusion: no new CVSS >=5.0 finding confirmed. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke). No findings file or ALERTS.md entry was created because the pass produced no new qualifying finding.**
+
+## Pass 5
+Date: 2026-09-23 (UTC+2)
+Scope: requested new angles only; owned live canaries, visible UI/source inspection, one public third-party share, one adjacent-ID mutation, and native clipboard paste. No posts/replies, no DMs, no spend, no OAuth approval, no credentials, no DevTools/network automation. Both required live shares were left alive.
+
+### Pass 5 probe results
+
+1. **Mobile share surface** — Resized the share view to 390x800 and checked both live canaries. The mobile layout showed the same transcript/attachment content, a compact copy-conversation icon, and the normal continue field; no owner handle, extra metadata, or different revoke control appeared. Screenshots: `screenshots/pass5-mobile-canary.png`, `screenshots/pass5-mobile-canary-attachment.png`.
+
+2. **Visible page source / rendered HTML** — Opened View Source for the live canary in the visible browser UI. The visible source showed the SPA shell/styles but no visible `user_id`, `screen_name`, email, or internal-owner fields; searches for `email`, `screen_name`, `user_id`, and `robots` returned no matches in the visible source snapshot. No suspicious field was present to screenshot. Source screenshot: `screenshots/pass5-view-source.png`.
+
+3. **Bookmark from Grok History** — Grok History listed the owned attachment conversation with bookmark icons and no share-status badge. Clicking its bookmark added it to the Grok History `Signets` tab; the item remained an account-local history/bookmark entry and did not create a public share artifact. Screenshot: `screenshots/pass5-history-bookmark.png` (list screenshot: `screenshots/pass5-history-list.png`).
+
+4. **Copy Conversation / clipboard** — On the share view, `Copier la conversation` navigated to an owned history copy (expected copy-to-history behavior), rather than exposing owner metadata. Pasting into a native blank Writer note yielded only the pre-existing clipboard string `https://x.com/i/grok/share/90b31da7a7c94acb8d9d0bcb72cd4be5` from an earlier probe; it contained no owner metadata or chat turns. This was not treated as a new issue because the clipboard value was stale and unrelated to the current share action. Screenshot: `screenshots/pass5-copy-clipboard.png`.
+
+5. **Grok History indicators** — The visible History panel showed chat titles, bookmark icons, and `Plus` menus only. No shared-status badge, revoke action, or public-share indicator appeared for the canary entries. Screenshot: `screenshots/pass5-history-list.png`.
+
+6. **Docs / Help / Feedback entry points** — The public `grok.com` Settings menu exposed only Theme, Language, and Feedback. Feedback opened a `Report content` dialog with reason/text/attachments and a disabled Send button; no Docs, Help, admin, or debug link appeared. No report was submitted. Screenshot: `screenshots/pass5-feedback.png`.
+
+7. **Public third-party share** — X search for `/i/grok/share/` surfaced one public post by `@ItsFullOfFellas` linking `https://x.com/i/grok/share/T9mQGgLaX102J610y07DCCcka`. Viewing the share exposed the transcript and a `Copy Conversation` control, but no owner handle, user ID, email, or other share-owner identity to logged-out viewers. Screenshot: `screenshots/pass5-third-party-share.png`.
+
+8. **Adjacent-ID mutation in Incognito** — In a fresh Incognito window, changed exactly one adjacent hex digit in live canary `...53692` to `...53693`. Result was `Conversation not found`; no transcript or metadata appeared. Screenshot: `screenshots/pass5-adjacent-not-found.png`.
+
+9. **Robots/noindex** — The visible View Source inspection found no visible `meta robots`/`robots` text. This is a source-observation result only, not a network/header claim.
+
+10. **Required Incognito canary recheck** — Fresh Incognito loads of both live canaries succeeded: `34708e5803394155b5c5cc86fbf53692` showed the canary transcript, and `1320261ffc9a4a789ca793765d55af71` showed the benign attachment filename/content and answer. Both were left alive. Screenshots: `screenshots/pass5-canary-unauth.png`, `screenshots/pass5-canary-attachment-unauth.png`.
+
+### Pass 5 triage table
+|| Surface | Observation | Status | New CVSS >=5.0? |
+||---|---|---|---|
+|| Mobile share view | Same transcript/attachment; no owner metadata or revoke UI | CONFIRMED expected responsive surface | No |
+|| Visible source / DOM text | No visible email, screen_name, user_id, or robots text | CONFIRMED no suspicious field | No |
+|| Bookmark | Added to private Grok History Signets; no public artifact | CONFIRMED account-local behavior | No |
+|| Copy Conversation / clipboard | Created history copy; native paste showed stale prior share URL only | CONFIRMED expected/negative | No |
+|| Grok History indicators | Bookmark/Plus only; no shared/revoke badge | DOCUMENTED | No |
+|| Settings / Feedback | Report-content form only; no Docs/Help/admin/debug link | CONFIRMED | No |
+|| Public third-party share | Transcript visible; owner identity not exposed | CONFIRMED no identity leak | No |
+|| One adjacent ID in Incognito | `...53693` returned Conversation not found | CONFIRMED expected | No |
+|| Robots/noindex | No visible robots meta text in source snapshot | INCONCLUSIVE source-only observation | No |
+|| Live canaries | Both rechecked unauthenticated and left alive | CONFIRMED fixtures | N/A |
+
+**Pass 5 conclusion: no new CVSS >=5.0 issue confirmed. No findings file or ALERTS.md entry was created. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke).**
