@@ -91,3 +91,48 @@ Scope: observation and gentle probes only; no public posts, DMs, purchases, cred
 | Live canary | Alive unauthenticated as required | CONFIRMED test fixture | N/A |
 
 **Delta conclusion: no new CVSS >=5.0 candidate confirmed. Existing XWEB-2026-001 remains PARTIAL (unauth share + no revoke confirmed; delete-survival RETRACTED).**
+
+## Pass 3
+Date: 2026-09-23 (UTC+2)
+Scope: requested NEW surfaces only; UI observation and benign probes. No posts, DMs, purchases, credential changes, training-toggle changes, Elon DMs, DevTools/network automation, or API enumeration.
+
+### Pass 3 probe results
+
+1. **Grok Voice mode** — The authenticated X Grok composer exposed `Enter voice mode`. Clicking it produced the visible UI alert `Failed to connect to voice mode`; no voice session, transcript, history entry, or share surface was created. **CONFIRMED limitation / no retention-leak evidence; no new CVSS candidate.** Screenshot: `screenshots/pass3-voice-failed.png`.
+
+2. **Recurring tasks / scheduled Grok** — The X Grok home UI displayed the `Create recurring tasks / Get access to more features on grok.com` upsell with `Explore` (a later refresh showed the localized equivalent `Parlez à Grok`). Clicking Explore opened `https://grok.com/?referrer=x`; the public landing was logged out with Sign in/Sign up and no task configuration. **CONFIRMED upsell only; no new CVSS candidate.** Screenshot: `screenshots/pass3-grok-home-upsell.png` (current localized upsell; the recurring-task wording was observed in the UI snapshot).
+
+3. **Grok in Search/Explore side panel vs main chat** — Explore's floating Grok panel opened with `Private`, `Chat history`, and `Open conversation` controls. Main `/i/grok` exposed `History` and `Private`; no authz discrepancy or private fixture was available. No prompt was sent from the side panel. **CONFIRMED expected surface parity; no new CVSS candidate.**
+
+4. **Same-user shared link / mutability** — In the same authenticated X session, live share `34708e5803394155b5c5cc86fbf53692` rendered the original two-message canary and the guard `Sending a message will copy this conversation into your history`; `Copy Conversation` was the only share action. A benign source edit was made in source conversation `2102787580286620032` (`PASS3-MUTABILITY-CHECK-20260923`, response `MUTABILITY-ACK-20260923`). Reloading the live share still showed only the original canary turns, not the new source turn. **CONFIRMED share is a static snapshot for this test; no unintended mutability or leak.** The required share was left alive. Screenshots: `screenshots/pass3-share-logged-in.png`, `screenshots/pass3-share-immutable-after-source-edit.png`.
+
+5. **Share/conversation GraphQL/API** — No API endpoint or GraphQL detail was visible in a UI error. Per scope, **SKIPPED**; no DevTools/network automation.
+
+6. **grok.com agents/projects/spaces** — The X recurring-task upsell linked only to unauthenticated `grok.com/?referrer=x`. No Agents, Projects, or Spaces link/control appeared. Unauthenticated Grok Settings exposed only Theme, Language, and Feedback. **CONFIRMED not reachable from linked surface; no new CVSS candidate.**
+
+7. **Two random share-ID probes (only two)** — `5d4ce6c931f4d9485d8cd65d8011fe24` and `6d8ac2124d41797397bd14e29ac4204c` each rendered `Conversation not found` (the latter was checked after the former; no brute force). **CONFIRMED expected not-found behavior; no new CVSS candidate.** Screenshot: `screenshots/pass3-random-share-not-found.png`.
+
+8. **Protected/locked account via Actions Grok** — No protected/locked-account fixture or private content was available. No claim was made and no protected-content action was attempted. **HYPOTHESIS / untested; no new CVSS candidate.**
+
+9. **Download/export** — No Download or Export control was present. Source chat header offered share-link copy, bookmark, history, and new chat; share view offered `Copy Conversation` only. **CONFIRMED absent on tested UI; no new CVSS candidate.**
+
+10. **`/settings/grok_settings` retest** — `Grok & Third-Party Collaborators` loaded, but both Settings and Section details panes showed `Something went wrong. Try reloading.` after retry and full reload. No data-download or third-party controls could be observed. **CONFIRMED UI error / controls unobservable; no new CVSS candidate.** Screenshot: `screenshots/pass3-settings-error.png`.
+
+### Pass 3 triage table
+| Surface | Observation | Status | New CVSS >=5.0? |
+|---|---|---|---|
+| Voice mode | Visible control; connection failed before session/transcript | CONFIRMED limitation | No |
+| Recurring/scheduled tasks | Upsell only; linked to unauthenticated grok.com | CONFIRMED expected upsell | No |
+| Explore side panel | Private/history/open-conversation controls; no authz discrepancy | CONFIRMED expected parity | No |
+| Same-user share + source edit | Share stayed at original snapshot after benign source edit | CONFIRMED static snapshot | No |
+| GraphQL/API | No visible UI error exposed endpoint details | SKIPPED by scope | No |
+| grok.com agents/projects/spaces | No linked controls or links surfaced | CONFIRMED not reachable | No |
+| Random share IDs (2) | Both not found | CONFIRMED expected | No |
+| Protected account Actions | No fixture; not attempted | HYPOTHESIS / untested | No |
+| Download/export | No control observed | CONFIRMED absent | No |
+| Grok settings | Both panes error after retry/reload | CONFIRMED UI error | No |
+
+**Pass 3 conclusion: no new CVSS >=5.0 candidate confirmed. Existing XWEB-2026-001 remains PARTIAL (unauthenticated share + no revoke confirmed; delete-survival retracted).**
+
+### Pass 3 canary final check
+- Rechecked both required live shares in the authenticated X session after all probes: `34708e5803394155b5c5cc86fbf53692` still rendered the original canary snapshot, and `1320261ffc9a4a789ca793765d55af71` still rendered the benign attachment card/content. Both were left alive. Screenshot: `screenshots/pass3-canary-attachment-logged-in.png`.
