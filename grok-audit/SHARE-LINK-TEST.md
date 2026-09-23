@@ -1,17 +1,28 @@
-# Share-link test (in progress)
+# Grok share-link audit
 
-Target: `https://x.com/i/grok/share/33518f73664045c38d60ef29b8aa202e`
+Date: 2026-09-23 (UTC+2)
 
-## Unauth HTTP shell (curl, no cookies)
-- `GET` share URL → **HTTP 200** HTML shell (~299KB)
-- Sets `guest_id*` cookies; clears `ct0`
-- Probe transcript strings **not** present in initial HTML (client-side fetch expected)
-- Feature flags observed in page boot: `grokShare`, `responsive_web_grok_share_attachment_enabled`, `responsive_web_grok_xweb_linked_share_readonly_enabled`
+## Verdict
 
-## Pending (browser)
-- Logged-out / private window render of transcript
-- Presence of revoke/unshare control
-- Survival after conversation delete
+- **Unauthenticated reachable? Yes.** In a fresh Chrome Incognito window with no X login, the share URL rendered the full probe transcript. The page showed only `Log in`/`Sign up` controls and no account chrome.
+- **Revoke control present? No.** The share page exposed `Copy conversation` (authenticated view) but no Revoke/Delete/Unshare control. The original response Share menu exposed only `Share Conversation`, `Copy link`, `Post link`, and `Send via Chat`; no revoke/unshare option.
+- **Survives conversation delete? Yes.** I deleted only the throwaway probe conversation (`conversation=2102783708549820871`) using Grok History > More > Delete. The authenticated conversation view became empty, but reloading the share URL in the unauthenticated Incognito window still rendered the full transcript.
 
-## Tentative severity (if unauth full transcript + no revoke + no expiry)
-Bearer opaque link ⇒ not trivially guessable → likely **CVSS 5.3–6.5** (C:H/I:N/A:N with UI:R), pending confirmation.
+## Evidence URLs
+
+- Share: https://x.com/i/grok/share/33518f73664045c38d60ef29b8aa202e
+- Original probe conversation: https://x.com/i/grok?conversation=2102783708549820871
+
+## Screenshots
+
+- `share-logged-in.png` — share page while authenticated, transcript visible.
+- `share-unauth-post-delete.png` — Incognito, logged out, transcript still visible after source conversation deletion.
+- `share-menu.png` — original response Share menu; no revoke/unshare control.
+- `delete-menu.png` — Grok History menu showing Delete for the throwaway probe.
+- `history-panel.png` — Grok History panel showing the throwaway probe entry.
+
+## CVSS draft
+
+Behavior is confirmed for this bearer share link, but the tested transcript was a throwaway probe and not sensitive user data. If the same behavior applies to private/sensitive chats, a conservative draft is **CVSS 3.1: 5.3 (AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N)** because the opaque bearer URL must be obtained; 7.5 could be argued if possession of the link is treated as AC:L. Impact is unauthorized read access and persistence after source-chat deletion, with no observed revoke control.
+
+No public posting or disclosure was performed.
