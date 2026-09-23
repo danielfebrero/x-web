@@ -1,7 +1,7 @@
 # Findings index — x-web / Grok audit
 
-Outbound threshold: **CVSS ≥ 5.0** → package for `@x` / Elon.
+Outbound threshold: **CVSS ≥ 5.0**.
 
-| ID | Title | CVSS | Surface | Status |
-|----|-------|------|---------|--------|
-| XWEB-2026-001 | Grok share bearer link: unauth read, no revoke, survives chat delete | 5.3 (draft; 7.5 if AC:L) | `/i/grok/share/<id>` | Confirmed |
+| ID | Title | CVSS | Status |
+|----|-------|------|--------|
+| XWEB-2026-001 | Grok share bearer: unauth read + no revoke (delete-survival **retracted**) | 5.3 draft | PARTIAL |
