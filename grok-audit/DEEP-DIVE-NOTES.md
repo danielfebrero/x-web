@@ -253,3 +253,31 @@ Scope: requested new angles only; benign owned canary, one Incognito share obser
 || Required live canaries | Both rendered in final unauthenticated Incognito check and remain alive | CONFIRMED fixtures | N/A |
 
 **Pass 6 conclusion: no new CVSS >=5.0 issue confirmed. Existing XWEB-2026-001 remains the only tracked item at PARTIAL (unauthenticated share + no revoke).**
+
+## Pass 7
+Date: 2026-09-23 (UTC+2)
+Scope: requested final lean pass only; settings/data-export observation, one public-index query, keyboard-shortcuts overlay review, and final Incognito recheck of one text and one attachment canary. No settings toggles changed, no history deletion, no archive download, no posts/DMs/purchases/OAuth approval/credentials, and no enumeration.
+
+### Pass 7 probe results
+
+1. **`/settings/grok_settings` retry** — Direct reload/retry now rendered `Grok et collaborateurs tiers` rather than the prior pane error. The visible controls were: allow use of public data/interactions/results for Grok/xAI training (checked), allow X to personalize Grok (unchecked), allow Grok to remember conversation history (unchecked), and `Supprimer l'historique des conversations`. No Grok download/export/collaborator-management control was present. No control was changed or activated. Screenshot: `screenshots/pass7-settings-grok.png`.
+
+2. **X Settings / Your X data / archive** — Direct `https://x.com/settings/your_twitter_data` exposed the standard `Vos données X` tabs, including `Télécharger l'archive`. Selecting that tab redirected to account-ownership verification and displayed `Vérifiez votre mot de passe`; no password was entered and no archive was requested or downloaded. No Grok-specific export was visible before the verification gate. The subsequent reload of the data page showed the settings panes erroring again, so no additional data categories were observable. No new candidate.
+
+3. **Public index probe** — Bing query `site:x.com/i/grok/share` returned unrelated non-X results (primarily Drugs.com/AAPC; about 53 sites) and no indexed `x.com/i/grok/share/...` result. No result was opened. SERP screenshot: `screenshots/pass7-bing-serp.png`. DuckDuckGo was transiently unreachable; no alternate query or second engine was needed.
+
+4. **Grok Help/keyboard-shortcuts overlay** — Opened `https://x.com/i/keyboard_shortcuts` from the Grok surface. The overlay contained only standard Navigation, Actions, and Media shortcuts (including Grok and Settings navigation); no debug route, diagnostic control, internal URL, or hidden export surface was exposed. Screenshot: `screenshots/pass7-keyboard-shortcuts.png`.
+
+5. **Final Incognito canary recheck** — In a native Chrome Incognito window, live text canary `34708e5803394155b5c5cc86fbf53692` rendered the expected `CANARY-XWEB-2026-002-7f3c9a` / `canary acknowledged.` transcript, and live attachment canary `1320261ffc9a4a789ca793765d55af71` rendered the expected benign attachment transcript/content. Both remained alive and untouched. Evidence: `screenshots/pass7-incognito-text.webp`, `screenshots/pass7-incognito-attachment.webp`.
+
+### Pass 7 triage table
+|| Surface | Observation | Status | New CVSS >=5.0? |
+||---|---|---|---|
+|| Grok settings retry | Training/personalization/memory checkboxes plus delete-history control; no export/collaborator control | CONFIRMED visible settings; no change made | No |
+|| Your X data / archive | Standard archive tab; password verification gate; no download performed | CONFIRMED gate / no Grok-specific export observed | No |
+|| Public index (`site:x.com/i/grok/share`) | Bing returned unrelated results; no indexed X Grok share opened | CONFIRMED negative index probe | No |
+|| Keyboard shortcuts / overlay | Standard shortcuts only; no debug routes or diagnostic surface | CONFIRMED negative | No |
+|| Final Incognito text canary | Expected transcript rendered | CONFIRMED live fixture; left alive | N/A |
+|| Final Incognito attachment canary | Expected attachment transcript/content rendered | CONFIRMED live fixture; left alive | N/A |
+
+**Pass 7 conclusion: no new CVSS >=5.0 candidate confirmed. High-value UI surfaces are exhausted pending fixtures (protected Actions, paid media, working settings). Existing XWEB-2026-001 remains PARTIAL (unauthenticated share + no revoke).**
