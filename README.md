@@ -18,3 +18,6 @@ grok-audit/
 
 ## Status
 Repo created 2026-09-23. Recon in progress.
+
+## X feature flags
+- [`x-feature-flags/`](x-feature-flags/) — reference of all 1424 X web feature switches (captured 2026-10-01): [`X-FEATURE-FLAGS.md`](x-feature-flags/X-FEATURE-FLAGS.md) + raw JSON.
